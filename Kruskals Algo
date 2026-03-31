@@ -1,0 +1,81 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+#define MAX 100
+
+struct Edge {
+    int u, v, w;
+};
+
+int find(int parent[], int i) {
+    if (parent[i] != i)
+        parent[i] = find(parent, parent[i]);
+    return parent[i];
+}
+
+void unionSet(int parent[], int x, int y) {
+    int rootX = find(parent, x);
+    int rootY = find(parent, y);
+    parent[rootX] = rootY;
+}
+
+int compare(const void* a, const void* b) {
+    return ((struct Edge*)a)->w - ((struct Edge*)b)->w;
+}
+
+int main() {
+    int V;
+    int graph[MAX][MAX];
+
+    printf("Enter number of vertices: ");
+    scanf("%d", &V);
+
+    printf("Enter adjacency matrix (0 if no edge):\n");
+    for (int i = 0; i < V; i++) {
+        for (int j = 0; j < V; j++) {
+            scanf("%d", &graph[i][j]);
+        }
+    }
+
+    struct Edge edges[MAX * MAX];
+    int E = 0;
+
+    // Convert matrix to edge list
+    for (int i = 0; i < V; i++) {
+        for (int j = i + 1; j < V; j++) { // avoid duplicates
+            if (graph[i][j] != 0) {
+                edges[E].u = i;
+                edges[E].v = j;
+                edges[E].w = graph[i][j];
+                E++;
+            }
+        }
+    }
+
+    int parent[MAX];
+    for (int i = 0; i < V; i++)
+        parent[i] = i;
+
+    qsort(edges, E, sizeof(edges[0]), compare);
+
+    struct Edge result[MAX];
+    int count = 0;
+
+    for (int i = 0; i < E && count < V - 1; i++) {
+        int u = find(parent, edges[i].u);
+        int v = find(parent, edges[i].v);
+
+        if (u != v) {
+            result[count++] = edges[i];
+            unionSet(parent, u, v);
+        }
+    }
+
+    printf("\nMinimum Spanning Tree:\n");
+    printf("Edge \tWeight\n");
+    for (int i = 0; i < count; i++) {
+        printf("%d - %d \t%d\n", result[i].u, result[i].v, result[i].w);
+    }
+
+    return 0;
+}
