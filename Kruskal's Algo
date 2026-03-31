@@ -1,0 +1,66 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+struct Edge {
+    int u, v, w;
+};
+
+int find(int parent[], int i) {
+    if (parent[i] != i)
+        parent[i] = find(parent, parent[i]);  // path compression
+    return parent[i];
+}
+
+void unionSet(int parent[], int x, int y) {
+    parent[x] = y;
+}
+
+int compare(const void* a, const void* b) {
+    return ((struct Edge*)a)->w - ((struct Edge*)b)->w;
+}
+
+int main() {
+    int V, E;
+
+    printf("Enter number of vertices: ");
+    scanf("%d", &V);
+
+    printf("Enter number of edges: ");
+    scanf("%d", &E);
+
+    struct Edge edges[E];
+    struct Edge result[V];  // MST
+
+    int parent[V];
+
+    printf("Enter edges (u v weight):\n");
+    for (int i = 0; i < E; i++) {
+        scanf("%d %d %d", &edges[i].u, &edges[i].v, &edges[i].w);
+    }
+
+    for (int i = 0; i < V; i++) {
+        parent[i] = i;
+    }
+
+    qsort(edges, E, sizeof(edges[0]), compare);
+
+    int count = 0;
+
+    for (int i = 0; i < E && count < V - 1; i++) {
+        int u = find(parent, edges[i].u);
+        int v = find(parent, edges[i].v);
+
+        if (u != v) {
+            result[count++] = edges[i];
+            unionSet(parent, u, v);
+        }
+    }
+
+    printf("\nMinimum Spanning Tree:\n");
+    printf("Edge \tWeight\n");
+    for (int i = 0; i < count; i++) {
+        printf("%d - %d \t%d\n", result[i].u, result[i].v, result[i].w);
+    }
+
+    return 0;
+}
