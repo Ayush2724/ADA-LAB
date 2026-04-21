@@ -1,0 +1,47 @@
+#include <stdlib.h>
+
+int* findOrder(int numCourses, int** prerequisites, int prerequisitesSize, int* prerequisitesColSize, int* returnSize) {
+    int a[100][100] = {0}, indeg[100] = {0};
+    int q[100], f = 0, r = 0;
+    int *topo = (int*)malloc(numCourses * sizeof(int));
+    int i, j, k = 0;
+
+    for(i = 0; i < prerequisitesSize; i++) {
+        int u = prerequisites[i][1];
+        int v = prerequisites[i][0];
+        a[u][v] = 1;
+    }
+
+ 
+    for(j = 0; j < numCourses; j++) {
+        for(i = 0; i < numCourses; i++) {
+            if(a[i][j]) indeg[j]++;
+        }
+    }
+
+    for(i = 0; i < numCourses; i++) {
+        if(indeg[i] == 0) q[r++] = i;
+    }
+
+
+    while(f < r) {
+        int node = q[f++];
+        topo[k++] = node;
+
+        for(j = 0; j < numCourses; j++) {
+            if(a[node][j]) {
+                indeg[j]--;
+                if(indeg[j] == 0) q[r++] = j;
+            }
+        }
+    }
+
+    if(k != numCourses) {
+        *returnSize = 0;
+        free(topo);
+        return NULL;
+    }
+
+    *returnSize = numCourses;
+    return topo;
+}
