@@ -1,0 +1,40 @@
+#include <stdbool.h>
+
+bool canFinish(int numCourses, int **prerequisites, int prerequisitesSize, int *prerequisitesColSize) {
+    int a[100][100] = {0}, indeg[100] = {0};
+    int q[100], f = 0, r = 0, count = 0;
+    int i, j;
+
+
+    for(i = 0; i < prerequisitesSize; i++) {
+        int u = prerequisites[i][1];
+        int v = prerequisites[i][0];
+        a[u][v] = 1;
+    }
+
+
+    for(j = 0; j < numCourses; j++) {
+        for(i = 0; i < numCourses; i++) {
+            if(a[i][j]) indeg[j]++;
+        }
+    }
+
+    for(i = 0; i < numCourses; i++) {
+        if(indeg[i] == 0) q[r++] = i;
+    }
+
+
+    while(f < r) {
+        int node = q[f++];
+        count++;
+
+        for(j = 0; j < numCourses; j++) {
+            if(a[node][j]) {
+                indeg[j]--;
+                if(indeg[j] == 0) q[r++] = j;
+            }
+        }
+    }
+
+    return count == numCourses;
+}
