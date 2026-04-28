@@ -1,0 +1,76 @@
+#include <stdio.h>
+
+#define LEFT -1
+#define RIGHT 1
+
+
+void printPerm(int perm[], int n) {
+    for (int i = 0; i < n; i++)
+        printf("%d ", perm[i]);
+    printf("\n");
+}
+
+int getMobile(int perm[], int dir[], int n) {
+    int mobile = -1;
+    int mobileIndex = -1;
+
+    for (int i = 0; i < n; i++) {
+        int next = i + dir[i];
+
+        if (next >= 0 && next < n && perm[i] > perm[next]) {
+            if (perm[i] > mobile) {
+                mobile = perm[i];
+                mobileIndex = i;
+            }
+        }
+    }
+    return mobileIndex;
+}
+
+void johnsonTrotter(int n) {
+    int perm[n], dir[n];
+
+  
+    for (int i = 0; i < n; i++) {
+        perm[i] = i + 1;
+        dir[i] = LEFT;
+    }
+
+    while (1) {
+        printPerm(perm, n);
+
+        int mobileIndex = getMobile(perm, dir, n);
+        if (mobileIndex == -1)
+            break;
+
+        int swapWith = mobileIndex + dir[mobileIndex];
+
+
+        int temp = perm[mobileIndex];
+        perm[mobileIndex] = perm[swapWith];
+        perm[swapWith] = temp;
+
+     
+        temp = dir[mobileIndex];
+        dir[mobileIndex] = dir[swapWith];
+        dir[swapWith] = temp;
+
+        mobileIndex = swapWith;
+        int mobileValue = perm[mobileIndex];
+
+  
+        for (int i = 0; i < n; i++) {
+            if (perm[i] > mobileValue)
+                dir[i] = -dir[i];
+        }
+    }
+}
+
+int main() {
+    int n;
+printf("Enter N ");
+scanf("%d",&n);
+
+    johnsonTrotter(n);
+    return 0;
+}
